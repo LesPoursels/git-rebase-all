@@ -1,0 +1,62 @@
+#!/bin/bash
+
+CMD=${1:-'build'}
+BASE=${2:-develop}
+
+
+# A list of all the branches excluding devel.* and master.*
+function branches {
+    git branch | grep -v -e '*' -e devel -e master
+}
+
+# Returns true if the argument branch does not contain the BASE branch
+function is_not_up_to_date {
+    ! git branch --merged $1 | grep $BASE > /dev/null
+}
+
+
+# Tries to rebase and force-push the argument branch
+function try_rebase {
+
+    git checkout $1
+
+    if git rebase $BASE --exec "$CMD" ; then
+
+        if ! git push --force ; then
+            echo "$1 rebased but could not push"
+        else
+            echo "$1 rebased and pushed"
+        fi
+
+    else
+        echo "Could not rebase $1 onto $BASE"
+        git rebase --abort
+    fi
+
+}
+
+
+for branch in `branches` ; do
+    if is_not_up_to_date $branch ; then
+        echo $branch is NOT up to date
+    else
+        echo "$branch is already up to date"
+    fi
+done
+
+read -p "Continue (y/N)?" choice
+case "$choice" in
+  y|Y ) echo "Continuing" ;;
+  n|N ) exit 0 ;;
+  * ) exit 0 ;;
+esac
+
+for branch in `branches` ; do
+
+    if is_not_up_to_date $branch ; then
+        echo $branch is not up to date
+        try_rebase $branch
+    fi
+
+done
+
