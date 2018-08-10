@@ -3,6 +3,9 @@
 CMD=${1:-'build'}
 BASE=${2:-develop}
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
 
 # A list of all the branches excluding devel.* and master.*
 function branches {
@@ -38,9 +41,9 @@ function try_rebase {
 
 for branch in `branches` ; do
     if is_not_up_to_date $branch ; then
-        echo $branch is NOT up to date
+        echo -e "$RED$branch$NC is NOT up to date"
     else
-        echo "$branch is already up to date"
+        echo -e "$GREEN$branch$NC is already up to date"
     fi
 done
 
