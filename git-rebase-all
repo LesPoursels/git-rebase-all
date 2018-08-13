@@ -39,13 +39,17 @@ function try_rebase {
 }
 
 
-for branch in `branches` ; do
-    if is_not_up_to_date $branch ; then
-        echo -e "$RED$branch$NC is NOT up to date"
-    else
-        echo -e "$GREEN$branch$NC is already up to date"
-    fi
-done
+function print_status {
+    for branch in `branches` ; do
+        if is_not_up_to_date $branch ; then
+            echo -e "$RED$branch$NC is NOT up to date"
+        else
+            echo -e "$GREEN$branch$NC is already up to date"
+        fi
+    done
+}
+
+print_status
 
 read -p "Continue (y/N)?" choice
 case "$choice" in
@@ -62,4 +66,6 @@ for branch in `branches` ; do
     fi
 
 done
+
+print_status
 
