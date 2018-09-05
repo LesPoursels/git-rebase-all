@@ -49,6 +49,7 @@ function print_status {
     done
 }
 
+git checkout $BASE
 print_status
 
 read -p "Continue (y/N)?" choice
@@ -67,5 +68,6 @@ for branch in `branches` ; do
 
 done
 
+git checkout $BASE
 print_status
 
