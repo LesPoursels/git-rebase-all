@@ -39,20 +39,30 @@ function try_rebase {
 }
 
 
-function print_status {
+function get_status {
+    count=0
     for branch in `branches` ; do
         if is_not_up_to_date $branch ; then
+            count=$((count + 1))
             echo -e "$RED$branch$NC is NOT up to date"
         else
             echo -e "$GREEN$branch$NC is already up to date"
         fi
     done
+    return $count
 }
 
 git checkout $BASE
-print_status
+get_status
 
-read -p "Continue (y/N)?" choice
+
+count=$?
+if [ $count -eq 0 ]; then
+    exit 0;
+fi
+
+
+read -p "Continue (y/N)? " choice
 case "$choice" in
   y|Y ) echo "Continuing" ;;
   n|N ) exit 0 ;;
@@ -69,5 +79,5 @@ for branch in `branches` ; do
 done
 
 git checkout $BASE
-print_status
+get_status
 
